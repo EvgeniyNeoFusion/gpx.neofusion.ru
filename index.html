@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+    <link rel="stylesheet" href="css/style.css">
+    <script type="text/javascript" src="http://api-maps.yandex.ru/2.1/?lang=ru_RU"></script>
+    <script type="text/javascript" src="js/script.js"></script>
+    <title>GPX to Yandex Maps</title>
+</head>
+
+<body>
+<table class="container">
+    <tr class="toolbar">
+        <td>
+            <input id="loadFile" type="file" multiple="false">
+            <button id="clearMap">Очистить</button>
+            <select id="town">
+                <option value="Moscow">Москва</option>
+            </select>
+            <button id="centerMap">Центрировать</button>
+        </td>
+    </tr>
+    <tr class="map">
+        <td>
+            <div id="map"></div>
+        </td>
+    </tr>
+</table>
+</body>
+
+</html>
