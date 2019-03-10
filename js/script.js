@@ -23,6 +23,8 @@ class YandexMap {
                 zoom: zoom,
                 controls: ['zoomControl', 'typeSelector']
             });
+            let typeSelector = that.myMap.controls.get('typeSelector');
+            typeSelector.options.set('panoramasItemMode', 'off');
         });
     }
 
