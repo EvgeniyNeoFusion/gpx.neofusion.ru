@@ -3,6 +3,7 @@ let yandexMap;
 let osmMap;
 let gpxData = [];
 let selectedTown;
+let fileInput;
 
 const towns = {
     'Moscow': [55.753676, 37.619899]
@@ -214,6 +215,7 @@ function render(data) {
 }
 
 function onClearMap() {
+    fileInput.value = '';
     [yandexMap, osmMap].forEach(function (map) {
         if (map) map.clear();
     });
@@ -226,6 +228,9 @@ function onCenterMap() {
 }
 
 window.onload = function () {
+    fileInput = document.getElementById('loadFile');
+    fileInput.value = '';
+
     yandexMap = new YandexMap('yandexMap', towns['Moscow'], defaultZoom);
 
     let mapRadios = document.querySelectorAll('input[type=radio][name="map"]');
@@ -257,7 +262,7 @@ window.onload = function () {
     });
 
     if (window.File && window.FileReader && window.FileList && window.Blob) {
-        document.getElementById('loadFile').addEventListener('change', onFileSelect, false);
+        fileInput.addEventListener('change', onFileSelect, false);
     } else {
         alert('К сожалению, ваш браузер не поддерживает file API');
     }
