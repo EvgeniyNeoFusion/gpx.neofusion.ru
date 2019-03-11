@@ -1,7 +1,7 @@
 const defaultZoom = 14;
 let yandexMap;
 let osmMap;
-let gpxData;
+let gpxData = [];
 let selectedTown;
 
 const towns = {
@@ -183,17 +183,25 @@ class GpxParser {
 }
 
 function onFileSelect(e) {
-    let file = e.target.files[0];
-    let fr = new FileReader();
-    fr.onload = function (event) {
-        let content = event.target.result.toString();
-        let parser = new DOMParser();
-        let xml = parser.parseFromString(content, 'text/xml');
-        let gpxParser = new GpxParser();
-        gpxData = gpxParser.parse(xml);
+    let files = Array.prototype.slice.call(e.target.files);
+    Promise.all(files.map(function (file) {
+        return new Promise(function (resolve) {
+            let fr = new FileReader();
+            fr.onload = function (event) {
+                let content = event.target.result.toString();
+                let parser = new DOMParser();
+                let xml = parser.parseFromString(content, 'text/xml');
+                let gpxParser = new GpxParser();
+                resolve(gpxParser.parse(xml));
+            };
+            fr.readAsText(file);
+        });
+    })).then(function (results) {
+        for (let i = 0; i < results.length; i++) {
+            gpxData = gpxData.concat(results[i]);
+        }
         render(gpxData);
-    };
-    if (file) fr.readAsText(file);
+    });
 }
 
 function render(data) {
