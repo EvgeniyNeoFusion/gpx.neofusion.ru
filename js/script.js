@@ -52,20 +52,20 @@ class YandexMap {
         });
     }
 
-    render(tracks) {
+    render(tracks, center = false) {
         this.clear();
         let that = this;
         let color = getGenerator(colors);
         tracks.forEach(function (track, index) {
-            that.renderTrack(track, color.next(), index === 0);
+            that.renderTrack(track, color.next(), center && index === 0);
         });
     }
 
-    renderTrack(segments, color, first) {
+    renderTrack(segments, color, center) {
         let that = this;
         let myGeoObjects = new ymaps.GeoObjectCollection({}, {strokeWidth: 4, strokeColor: color});
         segments.forEach(function (points, index) {
-            if (first && index === 0) {
+            if (center && index === 0) {
                 that.setCenter(points[0]);
             }
             myGeoObjects.add(new ymaps.Polyline(points));
@@ -113,19 +113,19 @@ class LeafletMap {
         this.layerGroup = L.layerGroup().addTo(this.myMap);
     }
 
-    render(tracks) {
+    render(tracks, center = false) {
         this.clear();
         let that = this;
         let color = getGenerator(colors);
         tracks.forEach(function (track, index) {
-            that.renderTrack(track, color.next(), index === 0);
+            that.renderTrack(track, color.next(), center && index === 0);
         });
     }
 
-    renderTrack(segments, color, first) {
+    renderTrack(segments, color, center) {
         let that = this;
         segments.forEach(function (points, index) {
-            if (first && index === 0) {
+            if (center && index === 0) {
                 that.setCenter(points[0]);
             }
             that.layerGroup.addLayer(L.polyline(points, {color: color}));
@@ -241,7 +241,7 @@ function onFileSelect(e) {
 function render(data) {
     [yandexMap, osmMap].forEach(function (map) {
         if (map) {
-            map.render(data);
+            map.render(data, true);
             map.setZoom(defaultZoom);
         }
     });
@@ -282,7 +282,6 @@ window.onload = function () {
                         osmMap = new LeafletMap('osmMap', yandexMap.getCenter(), yandexMap.getZoom());
                         if (gpxData) {
                             osmMap.render(gpxData);
-                            osmMap.setCenter(yandexMap.getCenter());
                         }
                     } else {
                         osmMap.setView(yandexMap.getCenter(), yandexMap.getZoom());
