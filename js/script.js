@@ -8,6 +8,30 @@ let fileInput;
 const towns = {
     'Moscow': [55.753676, 37.619899]
 };
+const colors = [
+    '#0066ff',
+    '#28b900',
+    '#ff003b',
+    '#c200ff',
+    '#00c3ff',
+    '#ff6c00',
+    '#ff009a',
+];
+
+function getGenerator(arrayOfValues) {
+    let i = 0;
+    return {
+        next: function () {
+            let value = arrayOfValues[i];
+            if (i < arrayOfValues.length - 1) {
+                i++;
+            } else {
+                i = 0;
+            }
+            return value;
+        }
+    }
+}
 
 class YandexMap {
     constructor(mapId, center, zoom) {
@@ -31,14 +55,15 @@ class YandexMap {
     render(tracks) {
         this.clear();
         let that = this;
+        let color = getGenerator(colors);
         tracks.forEach(function (track, index) {
-            that.renderTrack(track, index === 0);
+            that.renderTrack(track, color.next(), index === 0);
         });
     }
 
-    renderTrack(segments, first) {
+    renderTrack(segments, color, first) {
         let that = this;
-        let myGeoObjects = new ymaps.GeoObjectCollection({}, {strokeWidth: 4});
+        let myGeoObjects = new ymaps.GeoObjectCollection({}, {strokeWidth: 4, strokeColor: color});
         segments.forEach(function (points, index) {
             if (first && index === 0) {
                 that.setCenter(points[0]);
@@ -91,18 +116,19 @@ class LeafletMap {
     render(tracks) {
         this.clear();
         let that = this;
+        let color = getGenerator(colors);
         tracks.forEach(function (track, index) {
-            that.renderTrack(track, index === 0);
+            that.renderTrack(track, color.next(), index === 0);
         });
     }
 
-    renderTrack(segments, first) {
+    renderTrack(segments, color, first) {
         let that = this;
         segments.forEach(function (points, index) {
             if (first && index === 0) {
                 that.setCenter(points[0]);
             }
-            that.layerGroup.addLayer(L.polyline(points, {color: 'blue'}));
+            that.layerGroup.addLayer(L.polyline(points, {color: color}));
         });
     }
 
