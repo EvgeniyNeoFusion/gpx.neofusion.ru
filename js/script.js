@@ -12,7 +12,6 @@ const towns = {
 class YandexMap {
     constructor(mapId, center, zoom) {
         this.myMap = null;
-        this.myGeoObjects = null;
         this.init(mapId, center, zoom);
     }
 
@@ -29,23 +28,28 @@ class YandexMap {
         });
     }
 
-    render(list) {
-        let that = this;
-        let firstTrack = true;
+    render(tracks) {
         this.clear();
-        this.myGeoObjects = new ymaps.GeoObjectCollection({}, {strokeWidth: 4});
-        list.forEach(function (coords) {
-            if (firstTrack) {
-                that.setCenter(coords[0]);
-                firstTrack = false;
-            }
-            that.myGeoObjects.add(new ymaps.Polyline(coords));
+        let that = this;
+        tracks.forEach(function (track, index) {
+            that.renderTrack(track, index === 0);
         });
-        this.myMap.geoObjects.add(this.myGeoObjects);
+    }
+
+    renderTrack(segments, first) {
+        let that = this;
+        let myGeoObjects = new ymaps.GeoObjectCollection({}, {strokeWidth: 4});
+        segments.forEach(function (points, index) {
+            if (first && index === 0) {
+                that.setCenter(points[0]);
+            }
+            myGeoObjects.add(new ymaps.Polyline(points));
+        });
+        this.myMap.geoObjects.add(myGeoObjects);
     }
 
     clear() {
-        this.myMap.geoObjects.remove(this.myGeoObjects);
+        this.myMap.geoObjects.removeAll();
     }
 
     getCenter() {
@@ -84,16 +88,21 @@ class LeafletMap {
         this.layerGroup = L.layerGroup().addTo(this.myMap);
     }
 
-    render(list) {
-        let that = this;
-        let firstTrack = true;
+    render(tracks) {
         this.clear();
-        list.forEach(function (coords) {
-            if (firstTrack) {
-                that.setCenter(coords[0]);
-                firstTrack = false;
+        let that = this;
+        tracks.forEach(function (track, index) {
+            that.renderTrack(track, index === 0);
+        });
+    }
+
+    renderTrack(segments, first) {
+        let that = this;
+        segments.forEach(function (points, index) {
+            if (first && index === 0) {
+                that.setCenter(points[0]);
             }
-            that.layerGroup.addLayer(L.polyline(coords, {color: 'blue'}));
+            that.layerGroup.addLayer(L.polyline(points, {color: 'blue'}));
         });
     }
 
@@ -198,10 +207,8 @@ function onFileSelect(e) {
             fr.readAsText(file);
         });
     })).then(function (results) {
-        for (let i = 0; i < results.length; i++) {
-            gpxData = gpxData.concat(results[i]);
-        }
-        render(gpxData);
+        gpxData = results;
+        render(results);
     });
 }
 
