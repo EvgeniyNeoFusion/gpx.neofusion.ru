@@ -107,8 +107,8 @@ class LeafletMap {
 
     init(mapId, center, zoom) {
         this.myMap = L.map(mapId).setView(center, zoom);
-        L.tileLayer('http://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-            attribution: '&copy; <a href="http://openstreetmap.org">OpenStreetMap</a> contributors'
+        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            attribution: '&copy; <a href="https://openstreetmap.org">OpenStreetMap</a> contributors'
         }).addTo(this.myMap);
         this.layerGroup = L.layerGroup().addTo(this.myMap);
     }
